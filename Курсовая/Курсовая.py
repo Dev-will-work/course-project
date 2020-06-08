@@ -2,7 +2,6 @@
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib, ssl
-import collections
 import psycopg2
 from psycopg2 import sql
 from psycopg2.extras import DictCursor
@@ -40,6 +39,8 @@ def Create_message(name, address):
         server.quit()
  
         print("successfully sent email to %s:" % (msg['To']))
+
+
     ##    values = [
     ##        ('mom', 'mom', 'mom', '1999-01-08', 'M', 'six@nine.com', 'ololo', False, 5 )
     ##        ]
@@ -95,17 +96,16 @@ def Change_db_user(_dbname, _user, _password, _host, username): #Прорабо�
     cursor.close()
     conn.close()
 
-data = Get_table('coursework', 'pasha', 'P4h0A0e0', 'eaplfm.com')
-Print_table('coursework', 'pasha', 'P4h0A0e0', 'eaplfm.com')
+my_data = {"database":'coursework', "name":'pasha', "password":'P4h0A0e0', "host":'eaplfm.com'}
+
+data = Get_table(my_data["database"], my_data["name"], my_data["password"], my_data["host"])
+Print_table(my_data["database"], my_data["name"], my_data["password"], my_data["host"])
 for row in data:
     if row['mailing'] == True:
         print('mailed')
-        #Create_message(row['name'], row['adress'])
-        Set_mail_off('coursework', 'pasha', 'P4h0A0e0', 'eaplfm.com', row['ID'])
-        Print_table('coursework', 'pasha', 'P4h0A0e0', 'eaplfm.com')
+        Create_message(row['name'], row['adress'])
+        Set_mail_off(my_data["database"], my_data["name"], my_data["password"], my_data["host"], row['ID'])
+        Print_table(my_data["database"], my_data["name"], my_data["password"], my_data["host"])
 
 #Create_message("Pasha", "emshanov9@gmail.com")
-#conn = Connect('coursework', 'pasha', 'P4h0A0e0', 'eaplfm.com')
-#cur = Set_cursor()
 #Change_db_user('coursework', 'pasha', 'P4h0A0e0', 'eaplfm.com', 'yarik')
-#Close_connection(cursor)
