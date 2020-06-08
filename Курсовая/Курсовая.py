@@ -2,9 +2,10 @@
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib, ssl
-
+import collections
 import psycopg2
 from psycopg2 import sql
+from psycopg2.extras import DictCursor
 
 def Create_message(name, address):
     msg = MIMEMultipart("alternative")
@@ -39,33 +40,49 @@ def Create_message(name, address):
         server.quit()
  
         print("successfully sent email to %s:" % (msg['To']))
-
-
-#def Connect(_dbname, _user, _password, _host):
-#    conn = psycopg2.connect(dbname=_dbname, user=_user, 
-#                        password=_password, host=_host)
-#    return conn
-
-#def Set_cursor(conn, cur):
-#    cur = conn.cursor()
-#    return cur
-
-    ##    with conn.cursor() as cursor:
-    ##    conn.autocommit = True
     ##    values = [
     ##        ('mom', 'mom', 'mom', '1999-01-08', 'M', 'six@nine.com', 'ololo', False, 5 )
     ##        ]
     ##    insert = sql.SQL('INSERT INTO users VALUES {}').format(sql.SQL(',').join(map(sql.Literal, values)))
     ##    cursor.execute(insert)
 
-def Get_and_print_table(_dbname, _user, _password, _host): #То, что изначально было
+def Get_table(_dbname, _user, _password, _host): #То, что изначально было
+    conn = psycopg2.connect(dbname=_dbname, user=_user, 
+                        password=_password, host=_host)
+    cursor = conn.cursor(cursor_factory = DictCursor)
+    cursor.execute('SELECT * FROM public.users')
+    records = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return records
+
+def Print_table(_dbname, _user, _password, _host):
     conn = psycopg2.connect(dbname=_dbname, user=_user, 
                         password=_password, host=_host)
     cursor = conn.cursor()
-    cursor.execute('SELECT * FROM public.users LIMIT 5')
-    records = cursor.fetchall()
+    cursor.execute('SELECT * FROM public.users')
     for row in cursor:
         print(row)
+    cursor.close()
+    conn.close()
+
+def Set_mail_off(_dbname, _user, _password, _host, id):
+    conn = psycopg2.connect(dbname=_dbname, user=_user, 
+                        password=_password, host=_host)
+    cursor = conn.cursor()
+    cursor.execute('UPDATE users SET MAILING = False WHERE "ID" = %s' % id)
+    cursor.execute('SELECT * FROM public.users')
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+def Set_mail_on(_dbname, _user, _password, _host, id):
+    conn = psycopg2.connect(dbname=_dbname, user=_user, 
+                        password=_password, host=_host)
+    cursor = conn.cursor()
+    cursor.execute('UPDATE users SET MAILING = False WHERE "ID" = %s' % id)
+    cursor.execute('SELECT * FROM public.users')
+    conn.commit()
     cursor.close()
     conn.close()
 
@@ -74,14 +91,19 @@ def Change_db_user(_dbname, _user, _password, _host, username): #Прорабо�
                         password=_password, host=_host)
     cursor = conn.cursor()
     cursor.execute('ALTER DATABASE %s OWNER TO %s' % (_dbname, username)) 
+    conn.commit()
     cursor.close()
     conn.close()
 
-#def Close_connection(cursor):
-#    cursor.close()
-#    conn.close()
+data = Get_table('coursework', 'pasha', 'P4h0A0e0', 'eaplfm.com')
+Print_table('coursework', 'pasha', 'P4h0A0e0', 'eaplfm.com')
+for row in data:
+    if row['mailing'] == True:
+        print('mailed')
+        #Create_message(row['name'], row['adress'])
+        Set_mail_off('coursework', 'pasha', 'P4h0A0e0', 'eaplfm.com', row['ID'])
+        Print_table('coursework', 'pasha', 'P4h0A0e0', 'eaplfm.com')
 
-Get_and_print_table('coursework', 'pasha', 'P4h0A0e0', 'eaplfm.com')
 #Create_message("Pasha", "emshanov9@gmail.com")
 #conn = Connect('coursework', 'pasha', 'P4h0A0e0', 'eaplfm.com')
 #cur = Set_cursor()
