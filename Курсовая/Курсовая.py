@@ -108,7 +108,5 @@ for row in data:
         print('mailed')
         Create_message(row['name'], row['adress'])
         Set_mail_off(my_data['database'], my_data['name'], my_data['password'], my_data['host'], row['ID'])
-        Print_table(my_data['database'], my_data['ame', my_data['password'], my_data['host'])
-
+        Print_table(my_data['database'], my_data['name'], my_data['password'], my_data['host'])
 Create_message("Pasha", "emshanov9@gmail.com")
-#Change_db_user('coursework', 'pasha', 'P4h0A0e0', 'eaplfm.com', 'yarik')
