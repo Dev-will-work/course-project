@@ -10,8 +10,10 @@ def Create_message(name, address):
     msg = MIMEMultipart("alternative")
     link = "<a href='https://www.google.com/'>здесь</a>"
     raw_link = 'здесь: https://www.google.com/'
-    message = "Здравствуйте, %s! Благодарим вас за подписку на нашу рассылку.<br>Вы можете взять свой QR-код здесь.<br> Чтобы отписаться от рассылки нажмите %s" % (name, link)
-    raw = "Здравствуйте, %s! Благодарим вас за подписку на нашу рассылку.\n Вы можете взять свой QR-код здесь.\nЧтобы отписаться от рассылки нажмите %s" % (name, link)
+    site = "<a href='https://www.google.com/'>ссылке</a>"
+    raw_site = 'ссылке: https://www.google.com/'
+    message = "Здравствуйте, %s! Благодарим вас за подписку на нашу рассылку.<br>Вы можете взять свой QR-код по этой %s.<br><br> Чтобы отписаться от рассылки нажмите %s." % (name, site, link)
+    raw = "Здравствуйте, %s! Благодарим вас за подписку на нашу рассылку.\n Вы можете взять свой QR-код по этой %s.\n\n Чтобы отписаться от рассылки нажмите %s." % (name, raw_site, raw_link)
     # setup the parameters of the message
     password = "StrCpPy24rh^"
     msg['From'] = "pshtest@mail.ru"
@@ -37,7 +39,7 @@ def Create_message(name, address):
         server.sendmail(msg['From'], msg['To'], msg.as_string())
  
         server.quit()
- 
+
         print("successfully sent email to %s:" % (msg['To']))
 
 
@@ -52,10 +54,10 @@ def Get_table(_dbname, _user, _password, _host): #То, что изначаль�
                         password=_password, host=_host)
     cursor = conn.cursor(cursor_factory = DictCursor)
     cursor.execute('SELECT * FROM public.users')
-    records = cursor.fetchall()
+    data = cursor.fetchall()
     cursor.close()
     conn.close()
-    return records
+    return data
 
 def Print_table(_dbname, _user, _password, _host):
     conn = psycopg2.connect(dbname=_dbname, user=_user, 
@@ -81,7 +83,7 @@ def Set_mail_on(_dbname, _user, _password, _host, id):
     conn = psycopg2.connect(dbname=_dbname, user=_user, 
                         password=_password, host=_host)
     cursor = conn.cursor()
-    cursor.execute('UPDATE users SET MAILING = False WHERE "ID" = %s' % id)
+    cursor.execute('UPDATE users SET MAILING = True WHERE "ID" = %s' % id)
     cursor.execute('SELECT * FROM public.users')
     conn.commit()
     cursor.close()
@@ -98,14 +100,15 @@ def Change_db_user(_dbname, _user, _password, _host, username): #Прорабо�
 
 my_data = {"database":'coursework', "name":'pasha', "password":'P4h0A0e0', "host":'eaplfm.com'}
 
-data = Get_table(my_data["database"], my_data["name"], my_data["password"], my_data["host"])
-Print_table(my_data["database"], my_data["name"], my_data["password"], my_data["host"])
+#print('')
+data = Get_table(my_data['database'], my_data['name'], my_data['password'], my_data['host'])
+Print_table(my_data['database'], my_data['name'], my_data['password'], my_data['host'])
 for row in data:
     if row['mailing'] == True:
         print('mailed')
         Create_message(row['name'], row['adress'])
-        Set_mail_off(my_data["database"], my_data["name"], my_data["password"], my_data["host"], row['ID'])
-        Print_table(my_data["database"], my_data["name"], my_data["password"], my_data["host"])
+        Set_mail_off(my_data['database'], my_data['name'], my_data['password'], my_data['host'], row['ID'])
+        Print_table(my_data['database'], my_data['ame', my_data['password'], my_data['host'])
 
-#Create_message("Pasha", "emshanov9@gmail.com")
+Create_message("Pasha", "emshanov9@gmail.com")
 #Change_db_user('coursework', 'pasha', 'P4h0A0e0', 'eaplfm.com', 'yarik')
