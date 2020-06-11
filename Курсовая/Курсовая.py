@@ -8,8 +8,8 @@ from psycopg2.extras import DictCursor
 
 def Create_message(name, address):
     msg = MIMEMultipart("alternative")
-    link = "<a href='https://www.google.com/'>здесь</a>"
-    raw_link = 'здесь: https://www.google.com/'
+    link = "<a href='index.html'>здесь</a>"
+    raw_link = 'здесь: index.html'
     site = "<a href='https://www.google.com/'>ссылке</a>"
     raw_site = 'ссылке: https://www.google.com/'
     message = "Здравствуйте, %s! Благодарим вас за подписку на нашу рассылку.<br>Вы можете взять свой QR-код по этой %s.<br><br> Чтобы отписаться от рассылки нажмите %s." % (name, site, link)
@@ -18,8 +18,8 @@ def Create_message(name, address):
     password = "StrCpPy24rh^"
     msg['From'] = "pshtest@mail.ru"
     msg['To'] = address
-    msg['Subject'] = "Your discount code"
- 
+    msg['Subject'] = ""
+
     # add in the message body
     msg.attach(MIMEText(raw, 'plain'))
     msg.attach(MIMEText(message, 'html'))
@@ -41,13 +41,6 @@ def Create_message(name, address):
         server.quit()
 
         print("successfully sent email to %s:" % (msg['To']))
-
-
-    ##    values = [
-    ##        ('mom', 'mom', 'mom', '1999-01-08', 'M', 'six@nine.com', 'ololo', False, 5 )
-    ##        ]
-    ##    insert = sql.SQL('INSERT INTO users VALUES {}').format(sql.SQL(',').join(map(sql.Literal, values)))
-    ##    cursor.execute(insert)
 
 def Get_table(_dbname, _user, _password, _host): #То, что изначально было
     conn = psycopg2.connect(dbname=_dbname, user=_user, 
@@ -89,7 +82,7 @@ def Set_mail_on(_dbname, _user, _password, _host, id):
     cursor.close()
     conn.close()
 
-def Change_db_user(_dbname, _user, _password, _host, username): #Проработало, но результат не дало, пока хз почему
+def Change_db_user(_dbname, _user, _password, _host, username):
     conn = psycopg2.connect(dbname=_dbname, user=_user, 
                         password=_password, host=_host)
     cursor = conn.cursor()
@@ -100,13 +93,8 @@ def Change_db_user(_dbname, _user, _password, _host, username): #Прорабо�
 
 my_data = {"database":'coursework', "name":'pasha', "password":'P4h0A0e0', "host":'eaplfm.com'}
 
-#print('')
 data = Get_table(my_data['database'], my_data['name'], my_data['password'], my_data['host'])
 Print_table(my_data['database'], my_data['name'], my_data['password'], my_data['host'])
 for row in data:
     if row['mailing'] == True:
-        print('mailed')
         Create_message(row['name'], row['adress'])
-        Set_mail_off(my_data['database'], my_data['name'], my_data['password'], my_data['host'], row['ID'])
-        Print_table(my_data['database'], my_data['name'], my_data['password'], my_data['host'])
-Create_message("Pasha", "emshanov9@gmail.com")
